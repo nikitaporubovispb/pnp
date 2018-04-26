@@ -1,9 +1,10 @@
 package com.testrusoft.pnp.pnp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.Objects;
 
@@ -11,14 +12,19 @@ import java.util.Objects;
  * Created by root on 25.04.2018.
  */
 @Entity
+@Table(name = "Cars")
+@EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties(value = {"createdAt", "updatedAt"},
+        allowGetters = true)
 public class Cars {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @NotBlank
     private String brandName;
-    private int yearOfManufacturing;
+    private Integer yearOfManufacturing;
     private String client;
 
     public void setBrandName(String brandName) {
@@ -30,7 +36,7 @@ public class Cars {
     public void setYearOfManufacturing(int yearOfManufacturing) {
         this.yearOfManufacturing = yearOfManufacturing;
     }
-    public int getYearOfManufacturing() {
+    public Integer getYearOfManufacturing() {
         return yearOfManufacturing;
     }
     public void setClient(String client) {
@@ -59,5 +65,9 @@ public class Cars {
         if (this.client != other.client)
             return false;
         return true;
+    }
+    @Override
+    public String toString() {
+        return "Brand name: " + brandName + ", year: " + yearOfManufacturing + ", client : " + client;
     }
 }
