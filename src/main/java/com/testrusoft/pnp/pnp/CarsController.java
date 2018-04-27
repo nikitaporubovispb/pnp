@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -29,9 +31,8 @@ public class CarsController {
         this.clientsRepository = clientsRepository;
     }
 
-
-    // Get All Car
-    @ApiOperation(value = "Get All Car",
+    // Get All cars
+    @ApiOperation(value = "Get All Cars",
             notes = "Получение списка всех машин")
     @GetMapping("/cars")
     public List<Car> getAllCars() {
@@ -52,60 +53,40 @@ public class CarsController {
     @PostMapping("/client")
     public List<Client> createClient(@Valid @RequestBody newClient request) {
 
-        Client client = new Client(request.name, request.year);
-        Car car = new Car(request.brandName, request.yearOfManufacturing);
-        /*
-        car.setClient(client);
-        client.setCar(car);
-        */
-        carsRepository.save(car);
+        Client client = this.clientsRepository.findByName(request.name).orElse(new Client(request.name, request.year));
+
         clientsRepository.save(client);
-/*
-        System.out.println(" *** ");
-        for (Client book : clientsRepository.findAll()) {
-            System.out.println(book.toString());
+
+        Car newCar = new Car(request.brandName, request.yearOfManufacturing);
+
+        Optional<Car> oldCar = carsRepository.findByClient(client);
+        if (oldCar.isPresent()) {
+            Car car = oldCar.get();
+            if (!car.equals(newCar)) {
+                car.setClient(null);
+                carsRepository.save(car);
+
+                newCar.setClient(client);
+                carsRepository.save(newCar);
+            }
+        } else {
+            newCar.setClient(client);
+            carsRepository.save(newCar);
         }
-*/
+
         return clientsRepository.findAll();
     }
 
-    // Get a Single Car
-    @GetMapping("/cars/{id}")
-    @ApiOperation(value = "Get a Single Car",
-            notes = "Получение клиента по индексу")
-    public Car getCarsById(@PathVariable(value = "id") Long id) {
-        return carsRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Car", "id", id));
-    }
-    /*
-    // Update a Car
-    @PutMapping("/cars/{id}")
-    @ApiOperation(value = "Update a Car",
-            notes = "Обновление клиента")
-    public Car updateCars(@PathVariable(value = "id") Long noteId,
-                          @Valid @RequestBody Car noteDetails) {
-
-        Car car = carsRepository.findById(noteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Car", "id", noteId));
-
-        car.setBrandName(noteDetails.getBrandName());
-        car.setYearOfManufacturing(noteDetails.getYearOfManufacturing());
-//        car.setClient(noteDetails.getClient());
-
-        Car updatedCar = carsRepository.save(car);
-        return updatedCar;
-    }
-    // Delete a Car
-    @DeleteMapping("/cars/{id}")
+    // Delete a client
+    @DeleteMapping("/client/{id}")
     @ApiOperation(value = "Delete a Car",
             notes = "Удаление клиента")
-    public ResponseEntity<?> deleteCars(@PathVariable(value = "id") Long noteId) {
-        Car note = carsRepository.findById(noteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Car", "id", noteId));
+    public ResponseEntity<?> deleteCars(@PathVariable(value = "id") Long id) {
+        Client client = clientsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
 
-        carsRepository.delete(note);
+        clientsRepository.delete(client);
 
         return ResponseEntity.ok().build();
     }
-    */
 }

@@ -2,6 +2,7 @@ package com.testrusoft.pnp.pnp.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 /**
  * Created by andr on 26.04.2018.
@@ -21,21 +22,22 @@ public class Client {
     @NotNull
     @Column(name = "year")
     private Integer year;
-/*
-    @OneToOne(fetch = FetchType.EAGER,
-            cascade=CascadeType.ALL,
-            mappedBy = "client")
+
+    @OneToOne
     @PrimaryKeyJoinColumn
     private Car car;
-*/
+
     public Client(){}
     public Client(@NotNull String name, @NotNull Integer year){
         this.name = name;
         this.year = year;
     }
-
-    // TODO getters setters
-
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public Long getId() {
+        return id;
+    }
     public void setName(String name) {
         this.name = name;
     }
@@ -48,17 +50,13 @@ public class Client {
     public Integer getYear() {
         return year;
     }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public Long getId() {
-        return id;
-    }
 
-    /*    public void setCar(Car car) {
-                                this.car = car;
-                            }
-                        */
+    public void setCar(Car car) {
+        this.car = car;
+    }
+    public int hashCode(){
+        return Objects.hash(name, year, car);
+    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
