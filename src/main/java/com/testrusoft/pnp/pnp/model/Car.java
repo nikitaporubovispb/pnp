@@ -1,44 +1,38 @@
-package com.testrusoft.pnp.pnp;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+package com.testrusoft.pnp.pnp.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.util.Date;
-import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by root on 25.04.2018.
  */
 @Entity
 @Table(name = "Cars")
-@EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updatedAt"},
-        allowGetters = true)
 public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotNull
+    @Column(name = "brand_name")
     private String brandName;
+
+    @NotNull
+    @Column(name = "year_of_manufacturing")
     private Integer yearOfManufacturing;
-    @NotBlank
-    private String client;
 
-    @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    private Date createdAt;
+    /*
+    @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinColumn(name = "client", nullable = false)
+    private Client client;
+    */
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @LastModifiedDate
-    private Date updatedAt;
+    public Car(){}
+    public Car(@NotNull String brandName, @NotNull Integer yearOfManufacturing){
+        this.brandName = brandName;
+        this.yearOfManufacturing = yearOfManufacturing;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -58,16 +52,17 @@ public class Car {
     public Integer getYearOfManufacturing() {
         return yearOfManufacturing;
     }
-    public void setClient(String client) {
+/*    public void setClient(Client client) {
         this.client = client;
     }
-    public String getClient() {
+    public Client getClient() {
         return client;
     }
     @Override
-    public int hashCode(){
+   public int hashCode(){
         return Objects.hash(brandName, yearOfManufacturing, client);
     }
+ */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -77,16 +72,16 @@ public class Car {
         if (getClass() != obj.getClass())
             return false;
         Car other = (Car) obj;
-        if (this.brandName != other.brandName)
+        if (!this.brandName.equals(other.brandName))
             return false;
-        if (this.yearOfManufacturing != other.yearOfManufacturing)
+        if (!this.yearOfManufacturing.equals(other.yearOfManufacturing))
             return false;
-        if (this.client != other.client)
+/*        if (this.client != other.client)
             return false;
-        return true;
+ */      return true;
     }
     @Override
     public String toString() {
-        return "Brand name: " + brandName + ", year: " + yearOfManufacturing + ", client : " + client;
+        return "ID:  " + id + " Brand name: " + brandName + ", year: " + yearOfManufacturing;
     }
 }
