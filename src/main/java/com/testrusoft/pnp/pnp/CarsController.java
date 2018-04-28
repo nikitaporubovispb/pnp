@@ -51,30 +51,57 @@ public class CarsController {
     @ApiOperation(value = "Create a new client",
             notes = "Создание нового клиента")
     @PostMapping("/client")
-    public List<Client> createClient(@Valid @RequestBody newClient request) {
+    public Car createClient(@Valid @RequestBody newClient request) {
+        System.out.println("**********************");
 
-        Client client = this.clientsRepository.findByName(request.name).orElse(new Client(request.name, request.year));
+        Client client;
+        Car car;
 
-        clientsRepository.save(client);
+        Optional<Client> oldClient = clientsRepository.findByNameAndYear(request.name, request.year);
+        if (oldClient.isPresent()){
+            System.out.println("oldClient.isPresent()");
+            client = oldClient.get();
+            car = new Car(request.brandName, request.yearOfManufacturing);
 
-        Car newCar = new Car(request.brandName, request.yearOfManufacturing);
+            Optional<Car> oldCar = carsRepository.findByClient(client);
+            if (oldCar.get().equals(car)) {
+                System.out.println("oldCar.get().equals(car)");
+                car = oldCar.get();
+            } else {
+                System.out.println("NOT   oldCar.get().equals(car)");
+                System.out.println("oldCar.get() -- " + oldCar.get());
+                System.out.println("car -- " + car);
 
-        Optional<Car> oldCar = carsRepository.findByClient(client);
-        if (oldCar.isPresent()) {
-            Car car = oldCar.get();
-            if (!car.equals(newCar)) {
-                car.setClient(null);
-                carsRepository.save(car);
+                oldCar.get().setClient(null);
+                carsRepository.saveAndFlush(oldCar.get());
 
-                newCar.setClient(client);
-                carsRepository.save(newCar);
+                System.out.println(clientsRepository.findAll());
+                System.out.println(carsRepository.findAll());
             }
         } else {
-            newCar.setClient(client);
-            carsRepository.save(newCar);
+            System.out.println("NOT     oldClient.isPresent()");
+            client = new Client(request.name, request.year);
+
+            Optional<Car> oldCar = carsRepository.findByBrandNameAndYearOfManufacturingAndClientIsNull(request.brandName, request.yearOfManufacturing);
+            if (oldCar.isPresent()){
+                System.out.println("oldCar.isPresent()");
+                car = oldCar.get();
+            } else {
+                System.out.println("NOT    oldCar.isPresent()");
+                car = new Car(request.brandName, request.yearOfManufacturing);
+            }
+
         }
 
-        return clientsRepository.findAll();
+        car.setClient(client);
+        clientsRepository.save(client);
+
+        carsRepository.save(car);
+        System.out.println("end");
+        System.out.println(clientsRepository.findAll());
+        System.out.println(carsRepository.findAll());
+        System.out.println(client);
+        return carsRepository.findByClient(client).get();
     }
 
     // Delete a client

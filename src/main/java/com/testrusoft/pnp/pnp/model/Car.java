@@ -23,7 +23,7 @@ public class Car {
     @Column(name = "year_of_manufacturing")
     private Integer yearOfManufacturing;
 
-    @OneToOne(mappedBy = "car")
+    @OneToOne(mappedBy = "car", fetch = FetchType.EAGER)
     private Client client;
 
 
@@ -80,6 +80,6 @@ public class Car {
     }
     @Override
     public String toString() {
-        return "ID:  " + id + " Brand name: " + brandName + ", year: " + yearOfManufacturing;
+        return "ID:  " + id + " Brand name: " + brandName + ", year: " + yearOfManufacturing + " Client: " + client;
     }
 }

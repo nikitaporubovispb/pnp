@@ -11,5 +11,5 @@ import java.util.Optional;
  */
 @Repository
 public interface ClientsRepository extends JpaRepository<Client, Long> {
-    Optional<Client> findByName(String name);
+    Optional<Client> findByNameAndYear(String name, Integer year);
 }
