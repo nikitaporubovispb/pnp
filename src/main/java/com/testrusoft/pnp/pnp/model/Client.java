@@ -24,7 +24,7 @@ public class Client {
     private Integer year;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "car")
     private Car car;
 
     public Client(){}
@@ -70,11 +70,9 @@ public class Client {
             return false;
         if (!this.year.equals(other.year))
             return false;
-/*        if (this.client != other.client)
-            return false;
- */      return true;
+      return true;
     }
     public String toString() {
-        return "name: " + name + ", year: " + year;
+        return "id - " + id + " name: " + name + ", year: " + year;
     }
 }

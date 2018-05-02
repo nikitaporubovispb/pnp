@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,68 +50,42 @@ public class CarsController {
     @ApiOperation(value = "Create a new client",
             notes = "Создание нового клиента")
     @PostMapping("/client")
-    public Car createClient(@Valid @RequestBody newClient request) {
-        System.out.println("**********************");
+    public ResponseEntity<?> createClient(@Valid @RequestBody NewClient newClient) {
 
-        Client client;
+        Client client = clientsRepository.findByNameAndYear(newClient.name, newClient.year)
+                .orElse(new Client(newClient.name, newClient.year));
         Car car;
 
-        Optional<Client> oldClient = clientsRepository.findByNameAndYear(request.name, request.year);
-        if (oldClient.isPresent()){
-            System.out.println("oldClient.isPresent()");
-            client = oldClient.get();
-            car = new Car(request.brandName, request.yearOfManufacturing);
+        Car newCar = new Car(newClient.brandName, newClient.yearOfManufacturing);
 
-            Optional<Car> oldCar = carsRepository.findByClient(client);
-            if (oldCar.get().equals(car)) {
-                System.out.println("oldCar.get().equals(car)");
-                car = oldCar.get();
-            } else {
-                System.out.println("NOT   oldCar.get().equals(car)");
-                System.out.println("oldCar.get() -- " + oldCar.get());
-                System.out.println("car -- " + car);
-
-                oldCar.get().setClient(null);
-                carsRepository.saveAndFlush(oldCar.get());
-
-                System.out.println(clientsRepository.findAll());
-                System.out.println(carsRepository.findAll());
-            }
+        Optional<Car> oldCar = carsRepository.findByClient(client);
+        if (oldCar.isPresent() && oldCar.get().equals(newCar)) {
+            car = oldCar.get();
         } else {
-            System.out.println("NOT     oldClient.isPresent()");
-            client = new Client(request.name, request.year);
-
-            Optional<Car> oldCar = carsRepository.findByBrandNameAndYearOfManufacturingAndClientIsNull(request.brandName, request.yearOfManufacturing);
-            if (oldCar.isPresent()){
-                System.out.println("oldCar.isPresent()");
-                car = oldCar.get();
-            } else {
-                System.out.println("NOT    oldCar.isPresent()");
-                car = new Car(request.brandName, request.yearOfManufacturing);
-            }
-
+            car = carsRepository.findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.brandName, newClient.yearOfManufacturing)
+                    .orElse(newCar);
         }
 
-        car.setClient(client);
         clientsRepository.save(client);
 
+        car.setClient(client);
+        client.setCar(car);
+
         carsRepository.save(car);
-        System.out.println("end");
-        System.out.println(clientsRepository.findAll());
-        System.out.println(carsRepository.findAll());
-        System.out.println(client);
-        return carsRepository.findByClient(client).get();
+
+        return ResponseEntity.ok().build();
     }
 
     // Delete a client
-    @DeleteMapping("/client/{id}")
-    @ApiOperation(value = "Delete a Car",
+    @DeleteMapping("/client")
+    @ApiOperation(value = "Delete a Client",
             notes = "Удаление клиента")
-    public ResponseEntity<?> deleteCars(@PathVariable(value = "id") Long id) {
-        Client client = clientsRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+    public ResponseEntity<?> deleteClient(@Valid @RequestBody OldClient oldClient) {
 
-        clientsRepository.delete(client);
+        Car car = carsRepository.findByBrandNameAndClientName(oldClient.getBrandName(), oldClient.getName())
+                .orElseThrow(() -> new ResourceNotFoundException("Client", "name", oldClient.getName()));
+
+        clientsRepository.delete(car.getClient());
 
         return ResponseEntity.ok().build();
     }

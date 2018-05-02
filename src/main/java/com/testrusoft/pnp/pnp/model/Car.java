@@ -9,6 +9,8 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "Cars")
+/*@NamedQuery(name = "Cars.findByBrandNameAndClientName",
+        query = "select c from Cars c where c.brandName = ?1 and c.client.name = ?2")*/
 public class Car {
 
     @Id
@@ -23,6 +25,7 @@ public class Car {
     @Column(name = "year_of_manufacturing")
     private Integer yearOfManufacturing;
 
+    @JoinColumn(name = "client")
     @OneToOne(mappedBy = "car", fetch = FetchType.EAGER)
     private Client client;
 
@@ -57,6 +60,17 @@ public class Car {
     public Client getClient() {
         return client;
     }
+    public boolean equalsWithClient(Object obj) {
+        if (equals(obj)) {
+            Car other = (Car) obj;
+            if (client == null && other.client == null) {
+                return true;
+            } else {
+                return client.equals((other.client));
+            }
+        }
+        return false;
+    }
     @Override
     public int hashCode(){
         return Objects.hash(brandName, yearOfManufacturing, client);
@@ -74,9 +88,7 @@ public class Car {
             return false;
         if (!this.yearOfManufacturing.equals(other.yearOfManufacturing))
             return false;
-/*        if (this.client != other.client)
-            return false;
- */      return true;
+        return true;
     }
     @Override
     public String toString() {

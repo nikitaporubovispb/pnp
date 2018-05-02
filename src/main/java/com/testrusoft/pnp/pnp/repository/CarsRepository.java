@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CarsRepository extends JpaRepository<Car, Long> {
     Optional<Car> findByClient(Client client);
-    Optional<Car> findByBrandNameAndYearOfManufacturing(String brandName, Integer yearOfManufacturing);
-    Optional<Car> findByBrandNameAndYearOfManufacturingAndClientIsNull(String brandName, Integer yearOfManufacturing);
+    Optional<Car> findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(String brandName, Integer yearOfManufacturing);
+    Optional<Car> findByBrandNameAndClientName(String brandName, String name);
+
 }
