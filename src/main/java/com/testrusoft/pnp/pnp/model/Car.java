@@ -1,16 +1,21 @@
 package com.testrusoft.pnp.pnp.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
- * Created by root on 25.04.2018.
+ * Car rent class.
+ *
+ * @author pnp
+ * @version 0.1
  */
 @Entity
 @Table(name = "Cars")
-/*@NamedQuery(name = "Cars.findByBrandNameAndClientName",
-        query = "select c from Cars c where c.brandName = ?1 and c.client.name = ?2")*/
+@ApiModel(value="Арендуемый автомобиль", description="Описание автомобиля")
 public class Car {
 
     @Id
@@ -19,14 +24,17 @@ public class Car {
 
     @NotNull
     @Column(name = "brand_name")
+    @ApiModelProperty(value = "Марка", notes = "Описание марки автомобиля")
     private String brandName;
 
     @NotNull
     @Column(name = "year_of_manufacturing")
+    @ApiModelProperty(value = "Год выпуска", notes = "Описание года выпуска автомобиля")
     private Integer yearOfManufacturing;
 
     @JoinColumn(name = "client")
     @OneToOne(mappedBy = "car", fetch = FetchType.EAGER)
+    @ApiModelProperty(value = "Клиент", notes = "Описание текущего арендатора автомобиля")
     private Client client;
 
 
@@ -92,6 +100,6 @@ public class Car {
     }
     @Override
     public String toString() {
-        return "ID:  " + id + " Brand name: " + brandName + ", year: " + yearOfManufacturing + " Client: " + client;
+        return "ID:  " + id + " brandName: " + brandName + ", clientYear: " + yearOfManufacturing + " Client: " + client;
     }
 }

@@ -1,5 +1,6 @@
 package com.testrusoft.pnp.pnp;
 
+import io.swagger.annotations.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;

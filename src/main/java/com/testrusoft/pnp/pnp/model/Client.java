@@ -1,14 +1,21 @@
 package com.testrusoft.pnp.pnp.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
- * Created by andr on 26.04.2018.
+ * Client class.
+ *
+ * @author pnp
+ * @version 0.1
  */
 @Entity
 @Table(name = "Clients")
+@ApiModel(value="Клиент арендатор", description="Описание клиента арендатора")
 public class Client {
 
     @Id
@@ -17,14 +24,17 @@ public class Client {
 
     @NotNull
     @Column(name = "name")
+    @ApiModelProperty(value = "Имя", notes = "Описание имени клиента")
     private String name;
 
     @NotNull
-    @Column(name = "year")
+    @Column(name = "clientYear")
+    @ApiModelProperty(value = "Год рождения", notes = "Описание года рождения клиента")
     private Integer year;
 
     @OneToOne
     @JoinColumn(name = "car")
+    @ApiModelProperty(value = "Автомобиль", notes = "Описание арендованного автомобиля клиента")
     private Car car;
 
     public Client(){}
@@ -73,6 +83,6 @@ public class Client {
       return true;
     }
     public String toString() {
-        return "id - " + id + " name: " + name + ", year: " + year;
+        return "id - " + id + " clientName: " + name + ", clientYear: " + year;
     }
 }

@@ -1,15 +1,18 @@
 package com.testrusoft.pnp.pnp;
 
+import io.swagger.annotations.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Created by root on 26.04.2018.
+ * Swagger 2.0 Config class.
+ *
+ * @author pnp
+ * @version 0.1
  */
 public class SwaggerConfig {
     @Bean

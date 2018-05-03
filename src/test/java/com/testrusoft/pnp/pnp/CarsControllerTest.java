@@ -4,6 +4,8 @@ import com.testrusoft.pnp.pnp.model.Car;
 import com.testrusoft.pnp.pnp.model.Client;
 import com.testrusoft.pnp.pnp.repository.CarsRepository;
 import com.testrusoft.pnp.pnp.repository.ClientsRepository;
+import com.testrusoft.pnp.pnp.service.ClientToDelete;
+import com.testrusoft.pnp.pnp.service.NewClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +34,12 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 
 /**
- * Created by andr on 26.04.2018.
+ * Rest controller car rent tests class.
+ *
+ * @author  pnp
+ * @version 0.1
  */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PnpApplication.class, properties = "spring.profiles.active=test")
 @WebAppConfiguration
@@ -140,7 +146,7 @@ public class CarsControllerTest {
         Assert.assertTrue(carsRepository.count() == 1);
         Assert.assertTrue(clientsRepository.count() == 1);
 
-        exampleClient = json(new OldClient(client.getName(), car.getBrandName()));
+        exampleClient = json(new ClientToDelete(client.getName(), car.getBrandName()));
         mvc.perform(delete("/api/client")
                 .contentType(contentType)
                 .content(exampleClient))
@@ -162,7 +168,7 @@ public class CarsControllerTest {
         Client client = new Client("Vasya", 22);
         car.setClient(client);
 
-        String exampleClient = json(new OldClient(client.getName(), car.getBrandName()));
+        String exampleClient = json(new ClientToDelete(client.getName(), car.getBrandName()));
         mvc.perform(delete("/api/client")
                 .contentType(contentType)
                 .content(exampleClient))
@@ -247,7 +253,7 @@ public class CarsControllerTest {
         Assert.assertTrue(clientsRepository.count() == 1);
 
         // delete client 1
-        exampleClient = json(new OldClient(client1.getName(), car.getBrandName()));
+        exampleClient = json(new ClientToDelete(client1.getName(), car.getBrandName()));
         mvc.perform(delete("/api/client")
                 .contentType(contentType)
                 .content(exampleClient))
@@ -270,7 +276,7 @@ public class CarsControllerTest {
         Assert.assertTrue(clientsRepository.count() == 1);
     }
 
-    protected String json(Object o) throws IOException {
+    private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(
                 o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
