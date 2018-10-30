@@ -74,7 +74,8 @@ public class CarsController {
         if (oldCar.isPresent() && oldCar.get().equals(newCar)) {
             car = oldCar.get();
         } else {
-            car = carsRepository.findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing())
+            car = carsRepository
+                    .findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing())
                     .orElse(newCar);
         }
 
