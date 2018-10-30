@@ -64,27 +64,28 @@ public class CarsController {
     public ResponseEntity<?> createClient(@ApiParam(value = "Новый клиент с описанием автомобиля", required = true)
             @Valid @RequestBody NewClient newClient) {
 
+        
         Client client = clientsRepository.findByNameAndYear(newClient.getClientName(), newClient.getClientYear())
                 .orElse(new Client(newClient.getClientName(), newClient.getClientYear()));
-        Car car;
 
         Car newCar = new Car(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing());
 
         Optional<Car> oldCar = carsRepository.findByClient(client);
         if (oldCar.isPresent() && oldCar.get().equals(newCar)) {
-            car = oldCar.get();
+            ; // same car
         } else {
-            car = carsRepository
+            // change car
+            Car car = carsRepository
                     .findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing())
                     .orElse(newCar);
+
+            clientsRepository.save(client);
+
+            car.setClient(client);
+            client.setCar(car);
+
+            carsRepository.save(car);
         }
-
-        clientsRepository.save(client);
-
-        car.setClient(client);
-        client.setCar(car);
-
-        carsRepository.save(car);
 
         return ResponseEntity.ok().build();
     }

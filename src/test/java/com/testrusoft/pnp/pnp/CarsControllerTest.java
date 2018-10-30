@@ -24,7 +24,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -46,9 +48,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 @DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class CarsControllerTest {
 
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+    private MediaType contentType = new MediaType(
+                MediaType.APPLICATION_JSON.getType(),
+                MediaType.APPLICATION_JSON.getSubtype(),
+                Charset.forName("utf8")
+    );
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     private MockMvc mvc;
@@ -84,7 +88,7 @@ public class CarsControllerTest {
         Car car2 = new Car("Lexus", 2001);
         carsRepository.save(car2);
 
-        String exampleCars = "[" + json(car1) + "," + json(car2) + "]";
+        String exampleCars = json(Arrays.asList(car1, car2));
 
         mvc.perform(get("/api/cars"))
                 .andExpect(status().isOk())
@@ -101,7 +105,7 @@ public class CarsControllerTest {
         Client client2 = new Client("Petr", 1911);
         clientsRepository.save(client2);
 
-        String exampleClients = "[" + json(client1) + "," + json(client2) + "]";
+        String exampleClients =  json(Arrays.asList(client1, client2));
 
         mvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
