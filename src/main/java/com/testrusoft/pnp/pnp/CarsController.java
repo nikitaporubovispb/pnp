@@ -56,6 +56,18 @@ public class CarsController {
     }
 
     // Create a new client
+    private void changeCar(Car newCar, Client client, NewClient newClient){
+        Car car = carsRepository
+                .findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing())
+                .orElse(newCar);
+
+        clientsRepository.save(client);
+
+        car.setClient(client);
+        client.setCar(car);
+
+        carsRepository.save(car);
+    }
     @ApiOperation(value = "${CarsController.createClient.value}",
             notes = "Создание нового клиента")
     @PostMapping("/client")
@@ -64,27 +76,19 @@ public class CarsController {
     public ResponseEntity<?> createClient(@ApiParam(value = "Новый клиент с описанием автомобиля", required = true)
             @Valid @RequestBody NewClient newClient) {
 
-        
-        Client client = clientsRepository.findByNameAndYear(newClient.getClientName(), newClient.getClientYear())
-                .orElse(new Client(newClient.getClientName(), newClient.getClientYear()));
-
         Car newCar = new Car(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing());
+        Optional<Client> client = clientsRepository
+                .findByNameAndYear(newClient.getClientName(), newClient.getClientYear());
 
-        Optional<Car> oldCar = carsRepository.findByClient(client);
-        if (oldCar.isPresent() && oldCar.get().equals(newCar)) {
-            ; // same car
+        if (client.isPresent()){
+            Optional<Car> oldCar = carsRepository.findByClient(client.get());
+            if (oldCar.isPresent() && oldCar.get().equals(newCar)) {
+                ; // same car
+            } else {
+                changeCar(newCar, client.get(), newClient);
+            }
         } else {
-            // change car
-            Car car = carsRepository
-                    .findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing())
-                    .orElse(newCar);
-
-            clientsRepository.save(client);
-
-            car.setClient(client);
-            client.setCar(car);
-
-            carsRepository.save(car);
+            changeCar(newCar, new Client(newClient.getClientName(), newClient.getClientYear()), newClient);
         }
 
         return ResponseEntity.ok().build();
