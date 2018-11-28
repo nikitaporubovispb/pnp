@@ -56,18 +56,6 @@ public class CarsController {
     }
 
     // Create a new client
-    private void changeCar(Car newCar, Client client, NewClient newClient){
-        Car car = carsRepository
-                .findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newClient.getCarBrandName(), newClient.getCarYearOfManufacturing())
-                .orElse(newCar);
-
-        clientsRepository.save(client);
-
-        car.setClient(client);
-        client.setCar(car);
-
-        carsRepository.save(car);
-    }
     @ApiOperation(value = "${CarsController.createClient.value}",
             notes = "Создание нового клиента")
     @PostMapping("/client")
@@ -85,13 +73,25 @@ public class CarsController {
             if (oldCar.isPresent() && oldCar.get().equals(newCar)) {
                 ; // same car
             } else {
-                changeCar(newCar, client.get(), newClient);
+                changeCar(client.get(), newCar);
             }
         } else {
-            changeCar(newCar, new Client(newClient.getClientName(), newClient.getClientYear()), newClient);
+            changeCar(new Client(newClient.getClientName(), newClient.getClientYear()), newCar);
         }
 
         return ResponseEntity.ok().build();
+    }
+    private void changeCar(Client client, Car newCar){
+        Car car = carsRepository
+                .findFirst1ByBrandNameAndYearOfManufacturingAndClientIsNull(newCar.getBrandName(), newCar.getYearOfManufacturing())
+                .orElse(newCar);
+
+        clientsRepository.save(client);
+
+        car.setClient(client);
+        client.setCar(car);
+
+        carsRepository.save(car);
     }
 
     // Delete a client

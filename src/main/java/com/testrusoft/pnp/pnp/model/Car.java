@@ -81,7 +81,7 @@ public class Car {
     }
     @Override
     public int hashCode(){
-        return Objects.hash(brandName, yearOfManufacturing, client);
+        return Objects.hash(id, brandName, yearOfManufacturing);
     }
     @Override
     public boolean equals(Object obj) {
@@ -95,6 +95,8 @@ public class Car {
         if (!this.brandName.equals(other.brandName))
             return false;
         if (!this.yearOfManufacturing.equals(other.yearOfManufacturing))
+            return false;
+        if (!(this.id == other.id))
             return false;
         return true;
     }

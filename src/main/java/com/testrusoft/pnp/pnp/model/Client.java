@@ -65,7 +65,7 @@ public class Client {
         this.car = car;
     }
     public int hashCode(){
-        return Objects.hash(name, year, car);
+        return Objects.hash(id, name, year);
     }
     @Override
     public boolean equals(Object obj) {
@@ -79,6 +79,8 @@ public class Client {
         if (!this.name.equals(other.name))
             return false;
         if (!this.year.equals(other.year))
+            return false;
+        if (!(this.id == other.id))
             return false;
       return true;
     }
